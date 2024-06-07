@@ -115,6 +115,7 @@ export abstract class LdapDetailsComponent {
   // Permet de récupérer les valeurs du formulaire et de retourner un objet UserLdap avec ses valeurs
   protected getUserFromFormControl(): UserLdap {
     return {
+      id: this.user === undefined ? undefined : this.user.id,
       login: this.formGetValue('login'),
       nom: this.formGetValue('nom'),
       prenom: this.formGetValue('prenom'),

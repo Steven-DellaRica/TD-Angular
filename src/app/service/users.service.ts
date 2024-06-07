@@ -1,7 +1,9 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { LDAP_USERS } from 'src/app/models/ldap-mock-data';
 import { UserLdap } from 'src/app/models/user-ldap';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -9,39 +11,30 @@ import { UserLdap } from 'src/app/models/user-ldap';
 export class UsersService {
 
   users: UserLdap[] = LDAP_USERS;
+  private usersUrl = '';
+  private httpOptions = new HttpHeaders({'Content-Type': 'application/json'});
 
-  constructor() {}
-
-  addUser(user: UserLdap): Observable<UserLdap> {
-    this.users.push(user);
-    return of(user);
+  constructor(private http: HttpClient) {
+    this.usersUrl = environment.usersApiUrl;
   }
 
-  updateUser(userToUpdate: UserLdap): Observable<UserLdap> {
-    const user : UserLdap | undefined = this.users.find(u => u.login === userToUpdate.login);
-    if(user) {
-      user.nom = userToUpdate.nom;
-      user.prenom = userToUpdate.prenom;
-      user.nomComplet = user.nom + ' ' + user.prenom;
-      user.motDePasse = userToUpdate.motDePasse;
-
-      return of(userToUpdate);
-    }
-    return throwError(() => new Error('Utilisateur non trouvé'));
+  addUser(user: UserLdap): Observable<UserLdap> {
+    return this.http.post<UserLdap>(this.usersUrl, user, { headers: this.httpOptions });
   }
 
   getUsers(): Observable<UserLdap[]> {
-    return of(this.users)
+    return this.http.get<UserLdap[]>(this.usersUrl);
   }
 
-  getUser(login: string): Observable<UserLdap> {
-    const user: UserLdap | undefined = this.users.find(user => user?.login === login);
-
-    if (user !== undefined) {
-      return of(user);
-    }
-
-    return throwError(() => new Error('Utilisateur non trouvé'));
+  getUser(id: number): Observable<UserLdap> {
+    return this.http.get<UserLdap>(this.usersUrl + '/' + id);
   }
 
+  updateUser(user: UserLdap): Observable<UserLdap> {
+    return this.http.put<UserLdap>(this.usersUrl + '/' + user.id, user, { headers: this.httpOptions });
+  }
+
+  deleteUser(id: number): Observable<UserLdap> {
+    return this.http.delete<UserLdap>(this.usersUrl + '/' + id, {headers: this.httpOptions});
+  }
 }
