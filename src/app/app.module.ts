@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
+import { LdapManagementModule } from './ldap-management/ldap-management.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LdapListComponent } from './ldap-list/ldap-list.component';
@@ -24,28 +25,16 @@ import { AlertComponent } from './share/alert/alert.component';
 @NgModule({
   declarations: [
     AppComponent,
-    LdapListComponent,
     PageNotFoundComponent,
     NavbarComponent,
-    LdapEditComponent,
-    LdapAddComponent,
-    AlertComponent
   ],
   imports: [
-    NoopAnimationsModule,
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,
-    AppRoutingModule,
     AppMaterialModule,
-    MatFormFieldModule,
-    MatSlideToggleModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatSidenavModule,
-    MatIconModule,
-    MatInputModule,
-    MatListModule
+    LdapManagementModule,
+    AppRoutingModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
