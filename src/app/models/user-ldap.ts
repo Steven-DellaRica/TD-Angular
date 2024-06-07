@@ -6,8 +6,8 @@ export interface UserLdap {
     motDePasse: string | null;
     mail: string;
     role: string;
-    employerNumero: number;
-    employerNiveau: number;
+    employeNumero: number;
+    employeNiveau: number;
     dateEmbauche: string;
     publisherId: number;
     active: boolean;

@@ -2,12 +2,18 @@
     <div class="toolbar-filter">
         <mat-form-field style="width: 40%">
             <mat-label>Nom complet</mat-label>
-            <input matInput (keyup)="applyFilter($event)" placeholder="Entrez le début d'un nom"/>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Entrez le début d'un nom" />
         </mat-form-field>
         &nbsp;&nbsp;
         <mat-slide-toggle [checked]="unactiveSelected" (change)="unactiveChanged($event)">
             Utilisateur désactivé uniquement
         </mat-slide-toggle>
+    </div>
+
+    <div class="mat-elevation-z8">
+        <button mat-raised-button color="primary" (click)="addUser()">
+            Ajouter un utilisateur
+        </button> <br /><br />
     </div>
 
     <table mat-table [dataSource]="dataSource">
@@ -35,10 +41,9 @@
         <!-- <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns; "></tr>
          -->
-         
+
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="edit(row.login)"></tr>
-
     </table>
 
     <mat-paginator [pageSizeOptions]="[25, 50]" showFirstLastButtons></mat-paginator>

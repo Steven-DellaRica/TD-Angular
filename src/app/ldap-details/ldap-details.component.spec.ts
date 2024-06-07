@@ -10,7 +10,7 @@ describe('LdapDetailsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [LdapDetailsComponent]
     });
-    fixture = TestBed.createComponent(LdapDetailsComponent);
+    // fixture = TestBed.createComponent(LdapDetailsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

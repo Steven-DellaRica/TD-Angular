@@ -15,7 +15,6 @@ import { Router } from '@angular/router';
 export class LdapListComponent implements OnInit {
   displayedColumns: string[] = ['nomComplet', 'mail', 'employeNumero'];
   dataSource = new MatTableDataSource<UserLdap>([]);
-  // : MatTableDataSource<UserLdap>
   unactiveSelected = false;
 
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator | null;
@@ -53,12 +52,20 @@ export class LdapListComponent implements OnInit {
     this.usersService.getUsers().subscribe(
       users => {
         if (this.unactiveSelected) {
-          this.dataSource.data = users.filter((user: UserLdap) => user.active === false);
+          this.dataSource.data = users.filter(user => user.active === false);
         } else {
           this.dataSource.data = users;
         }
       }
     )
+  }
+
+  addUser() {
+    this.router.navigate(['/user/add']).then((e)=>{
+      if(!e){
+        console.log('Navigation has failed!');
+      }
+    });
   }
 
   unactiveChanged($event: MatSlideToggleChange): void {

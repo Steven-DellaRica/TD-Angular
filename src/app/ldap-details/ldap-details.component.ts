@@ -1,56 +1,47 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { UsersService } from '../service/users.service';
+import { Router } from '@angular/router';
 import { UserLdap } from '../models/user-ldap';
-import { Location } from '@angular/common';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ConfirmValidParentMatcher, passwordMatchingValidator } from './passwords-validator.directive';
 
-@Component({
-  selector: 'app-ldap-details',
-  templateUrl: './ldap-details.component.html',
-  styleUrls: ['./ldap-details.component.css']
-})
-export class LdapDetailsComponent implements OnInit {
+export abstract class LdapDetailsComponent {
 
   user: UserLdap | undefined;
-  processLoadRunning: boolean = false;
-  processValidateRunning: boolean = false;
+  processLoadRunning = false;
+  processValidateRunning = false;
+  userForm: FormGroup;
+  passwordPlaceHolder: string;
+  errorMessage = '';
+  confirmValidParentMatcher = new ConfirmValidParentMatcher();
 
-  userForm: FormGroup<any> = this.fb.group({
-    login: [''],
-    nom: [''],
-    prenom: [''],
-    passwordGroup: this.fb.group({
-      password: [''],
-      confirmPassword: ['']
-    }),
-    mail: { value: '', disabled: true },
-  });
+  protected constructor(
+    public addForm: boolean,
+    private fb: FormBuilder,
+    private router: Router,
+  ) {
+    this.userForm = this.fb.group({
+      login: [''],
+      nom: [''],
+      prenom: [''],
+      passwordGroup: this.fb.group({
+        password: [''],
+        confirmPassword: ['']
+      }, { validators: passwordMatchingValidator }),
+      mail: [{ value: '', disabled: true }],
+    });
 
-  constructor(private usersService: UsersService, private route: ActivatedRoute, private fb: FormBuilder, private router: Router) {
-
-  }
-
-  ngOnInit(): void {
-    this.getUser();
-  }
-
-  private getUser(): void {
-    const login: string | null = this.route.snapshot.paramMap.get('id');
-
-    if (login === null) {
-      console.error("Can't retrieve user id from URL");
-      return;
+    this.passwordPlaceHolder = 'Mot de passe' + (this.addForm ? '' : ' (vide si inchangé)');
+    if (this.addForm) {
+      this.passwordForm?.get('password')?.addValidators(Validators.required);
+      this.passwordForm?.get('confirmPassword')?.addValidators(Validators.required);
     }
+  }
 
-    this.usersService.getUser(login).subscribe(
-      (user) => {
-        this.user = user as UserLdap;
-        console.log('LdapDetails getUser =' + user);
-      }
-    );
+  get passwordForm() { 
+    return this.userForm.get('passwordGroup') as FormGroup; 
+  }
 
-    console.log("getUser= " + login);
+  protected OnInit(): void {
+
   }
 
   goToLdap(): void {
@@ -62,8 +53,8 @@ export class LdapDetailsComponent implements OnInit {
   }
 
   onSubmitForm(): void {
-    console.log("Truc envoyé");
-   }
+    this.validateForm();
+  }
 
   updateLogin(): void {
     const control = this.userForm.get('login');
@@ -86,7 +77,11 @@ export class LdapDetailsComponent implements OnInit {
     control.setValue(this.formGetValue('login').toLowerCase() + '@epsi.lan');
   }
 
-  isFormValid(): boolean { return false; }
+  isFormValid(): boolean {
+    return this.userForm.valid && (!this.addForm || this.formGetValue('passwordGroup.password') !== '');
+  }
+
+  abstract validateForm(): void
 
   private formGetValue(name: string): string {
     const control = this.userForm.get(name);
@@ -95,6 +90,51 @@ export class LdapDetailsComponent implements OnInit {
       return "";
     }
     return control.value;
+  }
+
+  private formSetValue(name: string, value: string | number): void {
+    const control = this.userForm.get(name);
+    if (control === null) {
+      console.error("L'objet '" + name + "' du formulaire n'existe pas");
+      return;
+    }
+    control.setValue(value);
+  }
+
+  protected copyUserToFormControl(): void {
+    if (this.user === undefined) {
+      return;
+    }
+
+    this.formSetValue('login', this.user.login);
+    this.formSetValue('nom', this.user.nom);
+    this.formSetValue('prenom', this.user.prenom);
+    this.formSetValue('mail', this.user.mail);
+  }
+
+  // Permet de récupérer les valeurs du formulaire et de retourner un objet UserLdap avec ses valeurs
+  protected getUserFromFormControl(): UserLdap {
+    return {
+      login: this.formGetValue('login'),
+      nom: this.formGetValue('nom'),
+      prenom: this.formGetValue('prenom'),
+      nomComplet: this.formGetValue('nom') + ' ' + this.formGetValue('prenom'),
+      mail: this.formGetValue('mail'),
+      employeNumero: 1, //this.formGetValue('employeNumero'),
+      employeNiveau: 1,
+      dateEmbauche: '2020-04-24',
+      publisherId: 1,
+      active: true,
+      motDePasse: '',
+      role: 'ROLE_USER'
+    }
+  }
+
+  getErrorMessage(): string {
+    if (this.passwordForm?.errors) {
+      return 'Les mots de passe ne correspondent pas';
+    }
+    return 'Entrez un mot de passe';
   }
 
 }
