@@ -7,7 +7,7 @@ export const LDAP_USERS: UserLdap[] = [
         nom: "V1",
         prenom: "Test",
         nomComplet: "V1 Test",
-        motDePasse: null,
+        motDePasse: "12345678",
         mail: "test.v1@epsi.fr",
         role: "ROLE_USER",
         employeNumero: 1234,

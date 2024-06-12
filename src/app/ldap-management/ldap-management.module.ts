@@ -21,6 +21,7 @@ import { MatListModule } from '@angular/material/list';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { InMemoryUsersService } from '../service/in-memory-users.service';
+import { NavbarComponent } from '../navbar/navbar.component';
 
 
 @NgModule({
@@ -28,6 +29,7 @@ import { InMemoryUsersService } from '../service/in-memory-users.service';
     LdapListComponent,
     LdapEditComponent,
     LdapAddComponent,
+    NavbarComponent,
     AlertComponent
   ],
   imports: [

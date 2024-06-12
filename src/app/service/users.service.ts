@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
 import { LDAP_USERS } from 'src/app/models/ldap-mock-data';
 import { UserLdap } from 'src/app/models/user-ldap';
 import { environment } from 'src/environments/environment';
@@ -11,7 +11,7 @@ import { environment } from 'src/environments/environment';
 export class UsersService {
 
   users: UserLdap[] = LDAP_USERS;
-  private usersUrl = '';
+  private usersUrl: string = '';
   private httpOptions = new HttpHeaders({'Content-Type': 'application/json'});
 
   constructor(private http: HttpClient) {
